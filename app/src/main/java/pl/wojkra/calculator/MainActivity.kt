@@ -50,6 +50,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onEqual(view: View){
+        /* In general this approach works but it's I'd say a bit flimsy. What could be done is split the presentation and logic:
+          1. Save number before operator
+          2. Save operator
+          3. Save number after operator
+          And display 1 + 2 + 3 as text, but that's only a suggestion
+        */
         if(lastNumeric){
             var tvValue = tvInput?.text.toString()
             var prefix = ""
@@ -59,13 +65,16 @@ class MainActivity : AppCompatActivity() {
                     tvValue = tvValue.substring(1)
                 }
                 if(tvValue.contains("-")) {
+                    // Extract from this place:
                     val splitValue = tvValue.split("-")
                     var one = splitValue[0]
                     var two = splitValue[1]
                     if (prefix.isNotEmpty()) {
                         one = prefix + one
                     }
+                    // To this into a separate method, with argument of operator, return a Pair or a Class that will hold two numbers
                     tvInput?.text = removeZeroAfterDot ((one.toDouble() - two.toDouble()).toString())
+                    // Same could go for line above, why repeat removeZeroAfterDot().toString() every time. Just put it into that method
                 }else if(tvValue.contains("+")) {
                     val splitValue = tvValue.split("+")
                     var one = splitValue[0]
@@ -92,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                     tvInput?.text = removeZeroAfterDot ((one.toDouble() * two.toDouble()).toString())
                 }
             }catch (e: ArithmeticException){
+                // Don't just print stactrace, use some logging library. do something like: Log.error("Exceiption on parsing {}",tvInput?.text.toString(), e);
                 e.printStackTrace()
             }
         }
